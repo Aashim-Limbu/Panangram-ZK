@@ -1,6 +1,6 @@
 {
   "noir_version": "1.0.0-beta.6+e796dfd67726cbc28eb9991782533b211025928d",
-  "hash": "7317292649951804806",
+  "hash": "18220741435828367396",
   "abi": {
     "parameters": [
       {
@@ -12,16 +12,17 @@
         "name": "answer_hash",
         "type": { "kind": "field" },
         "visibility": "public"
-      }
+      },
+      { "name": "address", "type": { "kind": "field" }, "visibility": "public" }
     ],
     "return_type": null,
     "error_types": {}
   },
-  "bytecode": "H4sIAAAAAAAA/62QQQqAMAwEW/FBSZO0yc2vWGz//wRBI5TiTQfC5jQsG8NN9JtZPDdP+AaOLoLM3EpqSLhDsqoCLDUrKorKkZSoKWuxagUMmRp2Meoui//1ulzrsEWY/rdtHk55268IRAEAAA==",
-  "debug_symbols": "dY/RCsIwDEX/Jc99mKCi+xWR0XWZBEJaslaQsX83G5vOB5/S5Pbc5I7QYVseDUkfB6hvI7RKzPRoOAafKYpNx8nB1jZZEW0EO92o5BUlQy2F2cHTc1k+DcnLUrNXUysHKJ1VM+yJcX5N7ktX/9HzcWUv1w98MvpunQ+kP/dCBfVhms2UfMu4ZuiLhF2k/EqbsoVOGgN2RXG2WzRb8AY=",
+  "bytecode": "H4sIAAAAAAAA/62PQQ6AIAwELfFBLW2hvfkVifD/J2iUA4ncdJJme5rswvIQroPlTei59cRv0OhiTCI1x0pMO0YvpihakpGRmh7RmKuJZS+e0Um4UlPn1mXwX6/btXYXTPbD8M84ASn2kKtIAQAA",
+  "debug_symbols": "dY/RCsIwDEX/Jc99qKCg+xWR0XXZKIS0ZK0gY/9uNladDz6lyc25zZ2hx66MbeAhTtDcZ+gkEIWxpehdDpF1Oi8GattmQdQRHHSlkhPkDA0XIgNPR2VbmpLjrWYnqloDyL1WNRwC4fpazJe2/9HreWdP9vahL4o/tHM+yM/BYHVxWd0kuI5wDzEU9odM+ZWqUlMniR77IrjabZp+8AY=",
   "file_map": {
     "50": {
-      "source": "fn main(guess_hash: Field, answer_hash: pub Field) {\n    assert(guess_hash == answer_hash);\n}\n",
+      "source": "fn main(guess_hash: Field, answer_hash: pub Field, address: pub Field) {\n    assert(guess_hash == answer_hash);\n}\n",
       "path": "/home/aashim/learn/noir/zk_Panagram_app/circuits/src/main.nr"
     }
   },

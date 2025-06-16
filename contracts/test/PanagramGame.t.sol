@@ -31,13 +31,14 @@ contract PanagramTest is Test {
      * @param guess This is the secret input.
      * @param correctAnswer This is the public input.
      */
-    function _getProof(bytes32 guess, bytes32 correctAnswer) internal returns (bytes memory _proof) {
-        uint256 NUM_ARGS = 4;
+    function _getProof(bytes32 guess, bytes32 correctAnswer, address sender) internal returns (bytes memory _proof) {
+        uint256 NUM_ARGS = 5;
         string[] memory inputs = new string[](NUM_ARGS);
         inputs[0] = "ts-node";
         inputs[1] = "js-scripts/generateProof.ts";
         inputs[2] = vm.toString(guess);
         inputs[3] = vm.toString(correctAnswer);
+        inputs[4] = vm.toString(sender);
 
         bytes memory encodedProof = vm.ffi(inputs);
         _proof = abi.decode(encodedProof, (bytes));
@@ -46,8 +47,57 @@ contract PanagramTest is Test {
 
     function testCorrectGuessGetNFT() public {
         vm.prank(player);
-        bytes memory proof = _getProof(answer, answer);
-        console.log("proof: ", proof.length);
-        // panagram.makeGuess(proof);
+        bytes memory proof = _getProof(answer, answer, player);
+        vm.expectEmit(true, false, false, true, address(panagram));
+        emit PanagramGame.PanagramGame__Winner(player, 1);
+        panagram.makeGuess(proof);
+        uint256 userbalance = panagram.balanceOf(player, 0);
+        assertEq(userbalance, 1);
+        vm.prank(player);
+        vm.expectRevert(PanagramGame.PanagramGame__AlreadyClaimed.selector);
+        panagram.makeGuess(proof);
+    }
+
+    function testRunnerUp() public {
+        vm.prank(player);
+        bytes memory proof = _getProof(answer, answer, player);
+        vm.expectEmit(true, false, false, true, address(panagram));
+        emit PanagramGame.PanagramGame__Winner(player, 1);
+        panagram.makeGuess(proof);
+        uint256 userbalance = panagram.balanceOf(player, 0);
+        assertEq(userbalance, 1);
+
+        address runnerUp = makeAddr("RunnerUp");
+        vm.prank(runnerUp);
+        bytes memory proof1 = _getProof(answer, answer, runnerUp);
+        vm.expectEmit(true, true, false, false, address(panagram));
+        emit PanagramGame.PanagramGame__RunnerUp(runnerUp, 1);
+        panagram.makeGuess(proof1);
+        uint256 runnerUpBalance = panagram.balanceOf(runnerUp, 1);
+        assertEq(runnerUpBalance, 1);
+    }
+
+    function testSecondRoundStarts() public {
+        // Selecting the winner from previous round.
+        vm.prank(player);
+        bytes memory proof = _getProof(answer, answer, player);
+        panagram.makeGuess(proof);
+        uint256 userbalance = panagram.balanceOf(player, 0);
+        assertEq(userbalance, 1);
+
+        vm.warp(panagram.MIN_DURATION() + 1);
+        bytes32 NEW_ANSWER = bytes32(uint256(keccak256("TRUE")) % FIELD_MODULUS);
+        panagram.newRound(NEW_ANSWER);
+        assertEq(panagram.s_round(), 2);
+        assertEq(panagram.s_currenRoundWinner(), address(0));
+        assertEq(panagram.s_answer(), NEW_ANSWER);
+    }
+
+    function testIncorrectGuessFails() public {
+        vm.prank(player);
+        bytes memory incorrectProof = _getProof(incorrectGuess,incorrectGuess,player);
+        vm.expectRevert();
+        panagram.makeGuess(incorrectProof);
+
     }
 }

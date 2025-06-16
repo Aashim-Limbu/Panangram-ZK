@@ -8,7 +8,7 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 contract PanagramGame is ERC1155, Ownable {
     uint256 public constant MIN_DURATION = 3 * 60 * 60;
     IVerifier public i_verifier;
-    bytes32 s_answer;
+    bytes32 public s_answer;
     uint256 public s_roundStartTime;
     address public s_currenRoundWinner;
     uint256 public s_round;
@@ -63,8 +63,9 @@ contract PanagramGame is ERC1155, Ownable {
             revert PanagramGame__AlreadyClaimed();
         }
         // check the proof and verify it with Verifier Contract.
-        bytes32[] memory publicInputs = new bytes32[](1);
+        bytes32[] memory publicInputs = new bytes32[](2);
         publicInputs[0] = s_answer;
+        publicInputs[1] = bytes32(uint256(uint160(msg.sender)));
         bool isValid = i_verifier.verify(proof, publicInputs);
         if (!isValid) {
             revert PanagramGame__InvalidProof();

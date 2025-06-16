@@ -12,6 +12,7 @@ async function generateProof(): Promise<string | undefined> {
     guess_hash: inputArray[0],
     // Public Inputs
     answer_hash: inputArray[1],
+    address: inputArray[2],
   };
   try {
     const { witness } = await noir.execute(inputs);
